@@ -12,6 +12,8 @@ ENV DIST_DIR /mnt/packs
 
 ADD image/root /
 
+ENV TEMPLATES_DIR /templates
+
 RUN mkdir -p /mnt/packs
 
 ADD dist/ /mnt/packs
@@ -24,10 +26,12 @@ ENV ELASTIC_DOWNLOAD_URL ${ELASTIC_REPO_BASE}/${ELASTIC_VERSION}/${ELASTIC_ARTIF
 ENV ELASTIC_USER="elasticsearch"
 ENV ELASTIC_GROUP="$ELASTIC_USER"
 
+
 ENV PATH ${ELASTIC_HOME}/bin:$PATH
 
-RUN opkg update &&\
-    opkg install shadow-groupadd shadow-useradd shadow-su &&\         
+RUN opkg update && \
+    opkg install shadow-groupadd shadow-useradd shadow-su curl && \
+    rm /tmp/opkg-lists/* && \
     mkdir -p /home $ELASTIC_HOME /data//data/elasticsearch && \
     usr/sbin/useradd -d /home/$ELASTIC_USER -m -s /bin/bash -U $ELASTIC_USER && \
     cp /root/.bashrc /home/$ELASTIC_USER && \
@@ -45,16 +49,20 @@ EXPOSE 9200 9300
 
 WORKDIR ${ELASTIC_HOME}
 
+
 RUN set -ex \
 	&& for path in \		
 		./logs \
 		./config \
 		./config/scripts \
+        ./config/templates \
 	; do \
 		mkdir -p "$path"; \
 		chown -R $ELASTIC_USER:$ELASTIC_GROUP "$path"; \
 	done && \
-	cp /config/*.yml ./config/ && \
+    cp /config/*.yml ./config/ && \
+    find /templates/ -name *.json -exec cp {} ./config/templates/ \; && \
+    find /templates/ -name *.json -exec cp {} ./config/ \; && \
 	chown -R $ELASTIC_USER:$ELASTIC_GROUP $ELASTIC_HOME
 
 CMD ["/start-elastic.sh"]
