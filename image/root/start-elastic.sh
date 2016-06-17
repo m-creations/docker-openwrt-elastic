@@ -44,10 +44,11 @@ function check_template_exits(){
 
 ############################################
 function creare_template(){
-  local es_url=$1 template_name=$2 template_file=$3
+  local es_url=$1 template_name=$2 template_file=$3 template_folder=$4
   HTTP_CODE=$(curl -sL -w "%{http_code}\\n" --connect-timeout 30 -d "@${template_file}" -XPUT "${es_url}/_template/${template_name}" -H "Content-Type: application/json" -o /dev/null)
   if [ 200 -eq $HTTP_CODE ]; then
     echo "Template $template_name created successfully on ES."
+    mv -f $template_file ${template_folder}/imported/
     #0=true
     return 0
   else
@@ -60,7 +61,7 @@ function creare_template(){
 ############################################
 function create_templates() {
   local es_url=$1 templates_folder=$2
-  echo "#--------------------------------------------"
+  echo "---------------------------------------------"
   echo "Creating templates json files inside $templates_folder folder ..."
   echo "---------------------------------------------"
   for template_file in ${templates_folder}/*.json; do
@@ -70,33 +71,41 @@ function create_templates() {
       echo "Template '$TEMPLATE_NAME' already exists";
     else
       echo "Creating $TEMPLATE_NAME template from file $template_file on ES..."
-      creare_template "$es_url" "$TEMPLATE_NAME" "$template_file"
+      creare_template "$es_url" "$TEMPLATE_NAME" "$template_file" "$templates_folder"
     fi
     echo "---------------------------------------------"
-  done
-  echo "Creating templates on ES Done."
-  echo "---------------------------------------------#"
+  done  
 }
 
 ############################################
 # Main Secion of Script
 ###########################################
 chown -R $ELASTIC_USER:$ELASTIC_GROUP /data
+mkdir -p ${EXTERNAL_TEMPLATES_DIR}/imported
 
 exec /usr/bin/su -p -l ${ELASTIC_USER} --shell /bin/bash -c ${ELASTIC_HOME}/bin/elasticsearch &
 
 pid=$!
 echo "Process ID of ES : $pid"
+wait_until_service_comes_up "http://localhost:9200"
+############### Check if any internal templates exists #############################
+ls -1 ${INTERNAL_TEMPLATES_DIR}/*.json > /dev/null 2>&1
+if [ "$?" = "0" ]; then
+  echo "#--------------------------------------------"  
+  echo "Checking internal templates to import ..."  
+  create_templates "http://localhost:9200" ${INTERNAL_TEMPLATES_DIR}
+  echo "Creating internal templates on ES Done."
+  echo "---------------------------------------------#"
+fi
 
-############### Check if any templates exists #############################
-ls -1 ${TEMPLATES_DIR}/*.json > /dev/null 2>&1
-is_template_found="$?"
-if [ "$is_template_found" = "0" ]; then
-  echo "Checking Templates ..."
-
-  wait_until_service_comes_up "http://localhost:9200"
-
-  create_templates "http://localhost:9200" ${TEMPLATES_DIR}
+############### Check if any external templates exists #############################
+ls -1 ${EXTERNAL_TEMPLATES_DIR}/*.json > /dev/null 2>&1
+if [ "$?" = "0" ]; then
+  echo "#--------------------------------------------"  
+  echo "Checking external templates to import ..."  
+  create_templates "http://localhost:9200" ${EXTERNAL_TEMPLATES_DIR}
+  echo "Creating external templates on ES Done."
+  echo "---------------------------------------------#"
 fi
 
 wait

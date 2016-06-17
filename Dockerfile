@@ -5,17 +5,17 @@ FROM mcreations/openwrt-java:8
 MAINTAINER Reza Rahimi <rahimi@m-creations.net>
 
 ENV ELASTIC_HOME /opt/elastic
+ENV ELASTIC_HOME /etc/elasticsearch/
+ENV INTERNAL_CONFIG_DIR /config
+ENV INTERNAL_TEMPLATES_DIR /etc/elastic/templates
+ENV EXTERNAL_TEMPLATES_DIR /data/templates
+ENV DIST_DIR /mnt/packs
 
 VOLUME /data
 
-ENV DIST_DIR /mnt/packs
-
-ADD image/root /
-
-ENV TEMPLATES_DIR /templates
-
 RUN mkdir -p /mnt/packs
 
+ADD image/root /
 ADD dist/ /mnt/packs
 
 ENV ELASTIC_MAJOR 2.3
@@ -26,12 +26,12 @@ ENV ELASTIC_DOWNLOAD_URL ${ELASTIC_REPO_BASE}/${ELASTIC_VERSION}/${ELASTIC_ARTIF
 ENV ELASTIC_USER="elasticsearch"
 ENV ELASTIC_GROUP="$ELASTIC_USER"
 
-
 ENV PATH ${ELASTIC_HOME}/bin:$PATH
 
 RUN opkg update && \
     opkg install shadow-groupadd shadow-useradd shadow-su curl && \
     rm /tmp/opkg-lists/* && \
+    mkdir -p ${INTERNAL_TEMPLATES_DIR}/imported && \    
     mkdir -p /home $ELASTIC_HOME /data//data/elasticsearch && \
     usr/sbin/useradd -d /home/$ELASTIC_USER -m -s /bin/bash -U $ELASTIC_USER && \
     cp /root/.bashrc /home/$ELASTIC_USER && \
@@ -44,11 +44,9 @@ RUN opkg update && \
     chown -R $ELASTIC_USER:$ELASTIC_GROUP /data && \
     opkg remove shadow-groupadd shadow-useradd
 
-
 EXPOSE 9200 9300
 
 WORKDIR ${ELASTIC_HOME}
-
 
 RUN set -ex \
 	&& for path in \		
@@ -60,9 +58,7 @@ RUN set -ex \
 		mkdir -p "$path"; \
 		chown -R $ELASTIC_USER:$ELASTIC_GROUP "$path"; \
 	done && \
-    cp /config/*.yml ./config/ && \
-    find /templates/ -name *.json -exec cp {} ./config/templates/ \; && \
-    find /templates/ -name *.json -exec cp {} ./config/ \; && \
+    cp -rf ${INTERNAL_CONFIG_DIR}/*.yml ./config/ && \
 	chown -R $ELASTIC_USER:$ELASTIC_GROUP $ELASTIC_HOME
 
 CMD ["/start-elastic.sh"]
