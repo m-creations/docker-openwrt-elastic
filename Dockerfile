@@ -5,7 +5,6 @@ FROM mcreations/openwrt-java:8
 MAINTAINER Reza Rahimi <rahimi@m-creations.net>
 
 ENV ELASTIC_HOME /opt/elastic
-ENV ELASTIC_HOME /etc/elasticsearch/
 ENV INTERNAL_CONFIG_DIR /config
 ENV INTERNAL_TEMPLATES_DIR /etc/elastic/templates
 ENV EXTERNAL_TEMPLATES_DIR /data/templates
