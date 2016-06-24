@@ -80,6 +80,7 @@ function create_templates() {
 ############################################
 # Main Secion of Script
 ###########################################
+mkdir -p /data/elasticsearch
 chown -R $ELASTIC_USER:$ELASTIC_GROUP /data
 mkdir -p ${EXTERNAL_TEMPLATES_DIR}/imported
 

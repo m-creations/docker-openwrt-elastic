@@ -31,7 +31,7 @@ RUN opkg update && \
     opkg install shadow-groupadd shadow-useradd shadow-su curl && \
     rm /tmp/opkg-lists/* && \
     mkdir -p ${INTERNAL_TEMPLATES_DIR}/imported && \    
-    mkdir -p /home $ELASTIC_HOME /data//data/elasticsearch && \
+    mkdir -p /home $ELASTIC_HOME /data && \
     usr/sbin/useradd -d /home/$ELASTIC_USER -m -s /bin/bash -U $ELASTIC_USER && \
     cp /root/.bashrc /home/$ELASTIC_USER && \
     echo 'alias hostname="echo $HOSTNAME"' >> /etc/profile && \
