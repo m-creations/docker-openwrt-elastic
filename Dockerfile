@@ -53,6 +53,8 @@ RUN set -ex \
 		./config \
 		./config/scripts \
         ./config/templates \
+        ./config/tokenfilter \
+        ./config/tokenfilter/stop \
 	; do \
 		mkdir -p "$path"; \
 		chown -R $ELASTIC_USER:$ELASTIC_GROUP "$path"; \
