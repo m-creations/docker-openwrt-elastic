@@ -14,7 +14,10 @@ The ports can be opened  with -p switch.
 This is a sample command line with custom parameters:
 
 ```
-docker run -d --name elastic1 -v /share/elastic:/data \
+docker run -d --name elastic1 \
+       -e CLUSTER_NAME=my-cluster \
+       -e NODE_NAME=my-first-node \
+       -v /share/elastic:/data \
        -p 9200:9200 -p 9300:9300 mcreations/openwrt-elastic
 ```
 
