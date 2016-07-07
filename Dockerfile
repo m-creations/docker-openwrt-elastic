@@ -25,6 +25,13 @@ ENV ELASTIC_DOWNLOAD_URL ${ELASTIC_REPO_BASE}/${ELASTIC_VERSION}/${ELASTIC_ARTIF
 ENV ELASTIC_USER="elasticsearch"
 ENV ELASTIC_GROUP="$ELASTIC_USER"
 
+
+# More info: https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-create-index.html#create-index-settings
+# Default for number_of_shards is 5
+ENV ELASTIC_NUMBER_OF_SHARDS=5
+# Default for number_of_replicas is 1 (ie one replica for each primary shard)
+ENV ELASTIC_NUMBER_OF_REPLICAS=1
+
 ENV CLUSTER_NAME=elasticsearch
 ENV NODE_NAME=node-1
 
