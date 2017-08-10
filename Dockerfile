@@ -17,7 +17,6 @@ RUN mkdir -p /mnt/packs
 ADD image/root /
 ADD dist/ /mnt/packs
 
-ENV ELASTIC_MAJOR 2.3
 ENV ELASTIC_VERSION 2.3.1
 ENV ELASTIC_REPO_BASE https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch
 ENV ELASTIC_ARTIFACT_NAME elasticsearch-${ELASTIC_VERSION}
