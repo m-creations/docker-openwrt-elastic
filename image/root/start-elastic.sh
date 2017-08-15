@@ -169,4 +169,10 @@ else
 echo "No index to create."
 fi
 
+curl -d@- -XPUT 'http://localhost:9200/_all/_settings?preserve_existing=true' <<EOF
+{
+  "index.merge.scheduler.max_thread_count" : "1"
+}
+EOF
+
 wait

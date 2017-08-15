@@ -2,8 +2,8 @@
 
 FROM mcreations/openwrt-java:8
 
-LABEL maintainer="Reza Rahimi <rahimi@m-creations.net>"
-LABEL maintainer="Ioanna M. Dimitriou <dimitriou@m-creations.net>"
+LABEL maintainer="Reza Rahimi <rahimi@m-creations.net> \
+                  and Ioanna M. Dimitriou <dimitriou@m-creations.net>"
 LABEL version="5.5.0"
 LABEL vendor="mcreations"
 

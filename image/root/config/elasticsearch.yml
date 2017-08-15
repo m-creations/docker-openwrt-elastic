@@ -2,5 +2,3 @@ network.host: 0.0.0.0
 path.data: /data
 cluster.name: ${CLUSTER_NAME}
 node.name: ${NODE_NAME}
-index.merge.scheduler.max_thread_count: 1
-bootstrap.mlockall: true
