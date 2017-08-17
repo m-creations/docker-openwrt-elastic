@@ -1,4 +1,4 @@
-Elastic 2.3.1 as a Docker container. For development use only.
+Elastic 5.5.0 as a Docker container. For development use only.
 
 ## Quickstart
 Without arguments, the container starts the Elastic server:
@@ -38,3 +38,19 @@ The external templates will be imported with after importing the internal templa
 For the complete details of the configuration, please see
 
 - [start-elastic.sh](https://github.com/m-creations/docker-openwrt-elastic/blob/master/image/root/start-elastic.sh)
+ 
+
+### Errors
+ 
+Building an image from this repository, and creating a container from that, returns a few erros: 
+
+```
+... wait until http://localhost:9200 coming up to create templates and indices ...
+shell-init: error retrieving current directory: getcwd: cannot access parent directories: Inappropriate ioctl for device
+shell-init: error retrieving current directory: getcwd: cannot access parent directories: Inappropriate ioctl for device
+chdir: error retrieving current directory: getcwd: cannot access parent directories: No child processes
+/opt/elastic/bin/elasticsearch: line 185: hostname: command not found
+```
+
+but the containers from this image work despite these errors. Please open an issue if it doesn't work in your setting! 
+

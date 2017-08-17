@@ -6,7 +6,7 @@ export DEFAULT_ES_URL="http://localhost:9200"
 ###########################################
 function wait_until_service_comes_up() {
   local es_url=$1
-  echo "... wait until $es_url comming up to create templates and indices ..."
+  echo "... wait until $es_url comes up to create templates and indices ..."
   while true; do
     HTTP_CODE=$(curl -sL -w "%{http_code}\\n"  --connect-timeout 1 -o /dev/null -XGET "$es_url")
     if [ 200 -eq $HTTP_CODE ]; then
@@ -14,10 +14,10 @@ function wait_until_service_comes_up() {
       break
     elif [ 000 -eq $HTTP_CODE ]; then
       sleep 1
-      echo "... wait until $es_url comming up to create templates ..."
+      echo "... wait until $es_url comes up to create templates ..."
     else
       sleep 1
-      echo "... wait until $es_url comming up to create templates (HttpCode is ${HTTP_CODE}) ..."
+      echo "... wait until $es_url comes up to create templates (HttpCode is ${HTTP_CODE}) ..."
     fi
   done
 }
@@ -30,7 +30,7 @@ function extract_template_name(){
 }
 
 ############################################
-function check_template_exits(){
+function check_template_exists(){
   local es_url=$1 template_name=$2
   HTTP_CODE=$(curl -sL -w "%{http_code}\\n"  --connect-timeout 10 -o /dev/null -XGET "${es_url}/_template/${template_name}")
   if [ 200 -eq $HTTP_CODE ]; then
@@ -68,7 +68,7 @@ function create_templates() {
   for template_file in ${templates_folder}/*.json; do
     echo "Processing template in file $template_file ..."
     TEMPLATE_NAME=$(extract_template_name "$template_file")
-    if check_template_exits "$es_url" "$TEMPLATE_NAME" ; then
+    if check_template_exists "$es_url" "$TEMPLATE_NAME" ; then
       echo "Template '$TEMPLATE_NAME' already exists";
     else
       echo "Creating $TEMPLATE_NAME template from file $template_file on ES..."
@@ -79,7 +79,7 @@ function create_templates() {
 }
 
 ############################################
-function check_index_exits(){
+function check_index_exists(){
   local es_url=$1 index_name=$2
   HTTP_CODE=$(curl -sL -w "%{http_code}\\n"  --connect-timeout 10 -o /dev/null -XHEAD "${es_url}/${index_name}")
   if [ 200 -eq $HTTP_CODE ]; then
@@ -116,7 +116,7 @@ function create_index(){
 
 
 ############################################
-# Main Secion of Script
+# Main Section of Script
 ###########################################
 mkdir -p /data/elasticsearch
 chown -R $ELASTIC_USER:$ELASTIC_GROUP /data
@@ -138,7 +138,7 @@ if [ "$?" = "0" ]; then
   echo "---------------------------------------------#"
 fi
 
-############### Check if any external templates exists #############################
+############### Check if any external templates exist #############################
 ls -1 ${EXTERNAL_TEMPLATES_DIR}/*.json > /dev/null 2>&1
 if [ "$?" = "0" ]; then
   echo "#--------------------------------------------"
@@ -156,7 +156,7 @@ echo "---------------------------------------------"
 for i in "${indices_array[@]}"
 do
    echo "Creating index $i ... "
-   check_index_exits "$DEFAULT_ES_URL" "$i"
+   check_index_exists "$DEFAULT_ES_URL" "$i"
    indexExists=$?
    if [ $indexExists -ne 0 ]; then
      create_index "$DEFAULT_ES_URL" "$i"
@@ -168,5 +168,11 @@ echo "--------------------------------------------#"
 else
 echo "No index to create."
 fi
+
+curl -d@- -XPUT 'http://localhost:9200/_all/_settings?preserve_existing=true' <<EOF
+{
+  "index.merge.scheduler.max_thread_count" : "1"
+}
+EOF
 
 wait

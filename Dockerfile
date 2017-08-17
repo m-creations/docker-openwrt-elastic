@@ -2,7 +2,10 @@
 
 FROM mcreations/openwrt-java:8
 
-MAINTAINER Reza Rahimi <rahimi@m-creations.net>
+LABEL maintainer="Reza Rahimi <rahimi@m-creations.net> \
+                  and Ioanna M. Dimitriou <dimitriou@m-creations.net>"
+LABEL version="5.5.0"
+LABEL vendor="mcreations"
 
 ENV ELASTIC_HOME /opt/elastic
 ENV INTERNAL_CONFIG_DIR /config
@@ -17,11 +20,12 @@ RUN mkdir -p /mnt/packs
 ADD image/root /
 ADD dist/ /mnt/packs
 
-ENV ELASTIC_MAJOR 2.3
-ENV ELASTIC_VERSION 2.3.1
-ENV ELASTIC_REPO_BASE https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch
-ENV ELASTIC_ARTIFACT_NAME elasticsearch-${ELASTIC_VERSION}
-ENV ELASTIC_DOWNLOAD_URL ${ELASTIC_REPO_BASE}/${ELASTIC_VERSION}/${ELASTIC_ARTIFACT_NAME}.tar.gz
+ENV ELASTIC_VERSION="5.5.0"
+ENV ELASTIC_REPO_BASE="https://artifacts.elastic.co/downloads/elasticsearch"
+ENV ELASTIC_ARTIFACT_NAME="elasticsearch-${ELASTIC_VERSION}"
+ENV ELASTIC_FILE="${ELASTIC_ARTIFACT_NAME}.tar.gz"
+ENV ELASTIC_DOWNLOAD_URL="${ELASTIC_REPO_BASE}/${ELASTIC_FILE}"
+
 ENV ELASTIC_USER="elasticsearch"
 ENV ELASTIC_GROUP="$ELASTIC_USER"
 
