@@ -1,4 +1,4 @@
-Elastic 5.5.0 as a Docker container. For development use only.
+Elastic 6.1.1 as a Docker container. For development use only.
 
 ## Quickstart
 Without arguments, the container starts the Elastic server:
