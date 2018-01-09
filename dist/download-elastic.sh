@@ -1,10 +1,5 @@
 #!/bin/bash
 # Download and place elastictomcat packs in this dist/ directory to avoid multiple times download.
-ELASTIC_VERSION="5.5.0"
-ELASTIC_REPO_BASE="https://artifacts.elastic.co/downloads/elasticsearch"
-ELASTIC_ARTIFACT_NAME="elasticsearch-${ELASTIC_VERSION}"
-ELASTIC_FILE="${ELASTIC_ARTIFACT_NAME}.tar.gz"
-ELASTIC_DOWNLOAD_URL="${ELASTIC_REPO_BASE}/${ELASTIC_FILE}"
 
 # download tar.gz 
 wget -c "${ELASTIC_DOWNLOAD_URL}"
