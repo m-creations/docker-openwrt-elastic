@@ -1,5 +1,14 @@
 Elastic 6.1.1 as a Docker container. For development use only.
 
+**Note that this repository is not yet linked to our Dockerhub account.** This means you'll have to build the image yourself first with: 
+
+```
+docker build . -t mcreations/openwrt-elastic
+```
+
+from this repository's top directory. 
+
+
 ## Quickstart
 Without arguments, the container starts the Elastic server:
 
@@ -8,7 +17,7 @@ docker run -d --name elastic mcreations/openwrt-elastic
 ```
 
 ## Configuration Details
-the volume as /data cab be passed from outside of Docker container with -v switch.
+the volume as /data can be passed from outside of Docker container with -v switch.
 The ports can be opened  with -p switch.
 
 This is a sample command line with custom parameters:
