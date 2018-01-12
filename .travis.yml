@@ -1,14 +1,14 @@
 sudo: required
 
-language: java
-
 services:
   - docker
 
-before_install:
+install:
   - docker build . -t openwrt-elastic:6.1.1
-  - docker run -d -p 9200:9200 --restart=unless-stopped --name elasticsearch -e "xpack.security.enabled=false" openwrt-elastic:6.1.1
 
-script: 
+script:
+  - docker run -d -p 9200:9200 --restart=unless-stopped --name elasticsearch -e "xpack.security.enabled=false" openwrt-elastic:6.1.1
   - sh test/test-connection.sh
+
+
 
