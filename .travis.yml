@@ -1,0 +1,18 @@
+sudo: required
+
+services:
+  - docker
+
+install:
+  - docker build . -t openwrt-elastic:6.1.1
+
+script:
+  - docker run -d -p 9200:9200 --restart=unless-stopped --name elasticsearch -e "xpack.security.enabled=false" openwrt-elastic:6.1.1
+  - sleep 15
+  - sh test/test-connection.sh
+  - sh test/test-send-receive-indexes.sh
+
+
+
+
+
