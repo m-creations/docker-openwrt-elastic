@@ -53,7 +53,7 @@ for path in \
             ./config/templates \
             ./config/tokenfilter \
             ./config/tokenfilter/stop
-do 
+do
   mkdir -p "$path"
   chown -R $ELASTIC_USER:$ELASTIC_GROUP "$path"
 done
@@ -61,3 +61,11 @@ done
 cp -rf ${INTERNAL_CONFIG_DIR}/*.yml ./config/
 chown -R $ELASTIC_USER:$ELASTIC_GROUP $ELASTIC_HOME
 
+# fix the missing 'hostname' command
+cat <<EOF> /usr/bin/hostname
+#!/bin/sh
+
+echo $HOSTNAME
+
+EOF
+chmod a+x /usr/bin/hostname
