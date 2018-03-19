@@ -1,25 +1,43 @@
 #!/bin/bash
 
+function shut_down() {
+    echo "Shutting down"
+    kill -TERM $pid 2>/dev/null
+}
+
+trap "shut_down" SIGKILL SIGTERM SIGHUP SIGINT EXIT
+
 export DEFAULT_ES_URL="http://localhost:9200"
 ############################################
 # Base Functions' Declaration
 ###########################################
 function wait_until_service_comes_up() {
   local es_url=$1
-  echo "... wait until $es_url comes up to create templates and indices ..."
-  while true; do
-    HTTP_CODE=$(curl -sL -w "%{http_code}\\n"  --connect-timeout 1 -o /dev/null -XGET "$es_url")
+  local is_up=NO
+  local wait_time=30
+
+  echo "... wait until $es_url comes up (for $wait_time seconds) to create templates and indices ..."
+
+  max_wait=$((SECONDS+$wait_time))
+
+  while [ $SECONDS -lt $max_wait ]; do
+    HTTP_CODE=$(curl -sL -w "%{http_code}\\n"  --connect-timeout 1 -o /dev/null -H "Content-Type: application/json" -XGET "$es_url")
     if [ 200 -eq $HTTP_CODE ]; then
       echo "ES service on $es_url is up ..."
+      is_up=YES
       break
     elif [ 000 -eq $HTTP_CODE ]; then
-      sleep 1
+      sleep 5
       echo "... wait until $es_url comes up to create templates ..."
     else
-      sleep 1
+      sleep 5
       echo "... wait until $es_url comes up to create templates (HttpCode is ${HTTP_CODE}) ..."
     fi
   done
+
+  if [ $is_up == "NO" ] ; then
+    echo "Elasticsearch did not start within $wait_time seconds!"
+  fi
 }
 
 ############################################
@@ -126,6 +144,7 @@ exec /usr/bin/su -p -l ${ELASTIC_USER} --shell /bin/bash -c ${ELASTIC_HOME}/bin/
 
 pid=$!
 echo "Process ID of ES : $pid"
+
 # wait until ES comes up
 wait_until_service_comes_up "$DEFAULT_ES_URL"
 ############### Check if any internal templates exists #############################
@@ -169,10 +188,14 @@ else
 echo "No index to create."
 fi
 
-curl -d@- -XPUT 'http://localhost:9200/_all/_settings?preserve_existing=true' <<EOF
-{
-  "index.merge.scheduler.max_thread_count" : "1"
-}
+# Did we create any indices? If yes, set their merge thread count to 1
+# as we are not interested in multi-threaded merging
+if [ ! -z $i ] ; then
+    curl -d@- -H "Content-Type: application/json" -XPUT 'http://localhost:9200/_all/_settings?preserve_existing=true' <<EOF
+    {
+      "index.merge.scheduler.max_thread_count" : "1"
+    }
 EOF
+fi
 
 wait

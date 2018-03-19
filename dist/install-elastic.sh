@@ -8,7 +8,7 @@ set -ex
 # install necessary packages
 
 opkg update
-opkg install shadow-groupadd shadow-useradd shadow-su curl coreutils-sha512sum
+opkg install shadow-groupadd shadow-useradd shadow-su curl coreutils-sha512sum coreutils-mktemp
 
 # create user
 
@@ -69,3 +69,6 @@ echo $HOSTNAME
 
 EOF
 chmod a+x /usr/bin/hostname
+
+# fix the wrong mktemp usage in elasticsearch-env
+sed -i -e 's/mktemp -d -t elasticsearch/mktemp -d -t "elasticsearch.XXXXXXXX"/' /opt/elastic/bin/elasticsearch-env
