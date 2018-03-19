@@ -1,4 +1,4 @@
-## -*- docker-image-name: "mcreations/openwrt-elastic" -*-
+## -*- docker-image-name: "mcreations/elasticsearch" -*-
 
 FROM mcreations/openwrt-java:8
 
