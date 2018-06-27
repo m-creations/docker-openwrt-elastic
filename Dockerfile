@@ -4,7 +4,6 @@ FROM mcreations/openwrt-java:8
 
 LABEL maintainer="Reza Rahimi <rahimi@m-creations.net> \
                   and Ioanna M. Dimitriou <dimitriou@m-creations.net>"
-LABEL version="6.2.2"
 LABEL vendor="mcreations"
 
 ENV ELASTIC_HOME="/opt/elastic"
@@ -20,7 +19,7 @@ RUN mkdir -p /mnt/packs
 ADD image/root /
 ADD dist/ /mnt
 
-ENV ELASTIC_VERSION="6.2.2"
+ENV ELASTIC_VERSION="6.3.0"
 ENV ELASTIC_REPO_BASE="https://artifacts.elastic.co/downloads/elasticsearch"
 ENV ELASTIC_ARTIFACT_NAME="elasticsearch-${ELASTIC_VERSION}"
 ENV ELASTIC_FILE="${ELASTIC_ARTIFACT_NAME}.tar.gz"
