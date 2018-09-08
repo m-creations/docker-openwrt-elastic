@@ -133,12 +133,33 @@ function create_index(){
 }
 
 
+function update_es_config() {
+  local propname
+  local conffile
+  conffile=${ELASTIC_HOME}/config/elasticsearch.yml
+  while IFS='=' read -r name value ; do
+    if [[ $name =~ ESOPT_.* ]] ; then
+      propname=$(echo "$name" | sed -e 's/___/-/g' | sed -e 's/__/./g' | sed -e 's/ESOPT_//')
+      # if the setting is already present in the yaml file, we have to remove that line,
+      # otherwise ES will refuse to start
+      grep "$propname" $conffile
+      if [ $? ] ; then
+        sed -i -e "s/^${propname}:.*//g" $conffile
+      fi
+      printf "%s: %s\n" "${propname}" "${!name}" >> $conffile
+    fi
+  done < <(env)
+}
+
 ############################################
 # Main Section of Script
 ###########################################
 mkdir -p /data/elasticsearch
 chown -R $ELASTIC_USER:$ELASTIC_GROUP /data
 mkdir -p ${EXTERNAL_TEMPLATES_DIR}/imported
+
+# update config from environment variables
+update_es_config
 
 exec /usr/bin/su -p -l ${ELASTIC_USER} --shell /bin/bash -c ${ELASTIC_HOME}/bin/elasticsearch &
 

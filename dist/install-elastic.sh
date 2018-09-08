@@ -23,7 +23,7 @@ echo 'alias hostname="echo $HOSTNAME"' >> /etc/profile
 
 cd tmp
 
-wget -c "${ELASTIC_DOWNLOAD_URL}"
+wget --progress=dot:giga -c "${ELASTIC_DOWNLOAD_URL}"
 wget "${ELASTIC_DOWNLOAD_URL}.sha512"
 
 # check sha512

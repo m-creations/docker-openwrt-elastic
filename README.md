@@ -23,6 +23,22 @@ docker run -d --name elastic1 \
        -p 127.0.0.1:9200:9200 -p 127.0.0.1:9300:9300 \
        mcreations/elasticsearch
 ```
+## Additional Configuration Values
+
+To add configuration values to the configuration file
+(`config/elasticsearch.yml`), you have to specify environment
+variables with specific names, which are automatically parsed during
+startup.
+
+A variable specified as `docker ... -e ESOPT_http__cors__allow___origin=\"*\"`
+is translated to the following entry in `elasticsearch.yml`:
+
+```
+http.cors.allow-origin: "*"
+```
+
+which means that the prefix `ESOPT_` is removed, `__` is replaced by
+`.`, and `___` is replaced by `-`.
 
 ## Templates Import Configuration
 
