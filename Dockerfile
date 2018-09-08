@@ -19,7 +19,7 @@ RUN mkdir -p /mnt/packs
 ADD image/root /
 ADD dist/ /mnt
 
-ENV ELASTIC_VERSION="6.3.0"
+ENV ELASTIC_VERSION="6.3.2"
 ENV ELASTIC_REPO_BASE="https://artifacts.elastic.co/downloads/elasticsearch"
 ENV ELASTIC_ARTIFACT_NAME="elasticsearch-${ELASTIC_VERSION}"
 ENV ELASTIC_FILE="${ELASTIC_ARTIFACT_NAME}.tar.gz"
