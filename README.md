@@ -1,7 +1,8 @@
 Elasticsearch in a small [OpenWrt](http://openwrt.org) container. For development use only.
 
 ## Quickstart
-Without arguments, the container starts the Elastic server:
+
+Without arguments, the container starts the ElasticSearch server:
 
 ```
 docker run -d --name elastic mcreations/openwrt-elastic
@@ -19,25 +20,30 @@ docker run -d --name elastic1 \
        -e CLUSTER_NAME=my-cluster \
        -e NODE_NAME=my-first-node \
        -v /share/elastic:/data \
-       -p 9200:9200 -p 9300:9300 mcreations/elasticsearch
+       -p 127.0.0.1:9200:9200 -p 127.0.0.1:9300:9300 \
+       mcreations/elasticsearch
 ```
 
 ## Templates Import Configuration
+
+This image is capable of importing
+[index templates](https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-templates.html)
+which are applied to indices when they are created.
 
 All templates should be in json format. Their name will be deduced
 from the `template` attribute in their json definition after
 eliminating `*` symbols.
 
-All imported json files will be moved into them `./imported` folder
+All imported json files will be moved into the `./imported` folder
 after importing.
 
-There are two ways for importing templates into ES:
+There are two ways for importing templates into ES.
 
 ### Internal templates
 
-Internal templates should be placed in the Docker source folder
-`./image/root/etc/elastic/templates` and can be used for importing
-additional templates when extending this image.
+Internal templates are read from `/etc/elastic/templates` which is
+empty in this image, so you can safely extend this image and use `ADD`
+in your Dockerfile to add the templates.
 
 ### External templates
 
